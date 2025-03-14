@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="Hỏi Dân IT - Dự án laptopshop" />
+  <meta name="author" content="Hỏi Dân IT" />
+  <title>Quản lý sản phẩm - Hỏi Dân IT</title>
+  <link href="/css/styles.css" rel="stylesheet" />
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <style>
+    .page-title {
+      font-weight: 700;
+      color: #4e73df;
+    }
+
+    .breadcrumb-item a {
+      color: #4e73df;
+      text-decoration: none;
+    }
+
+    .breadcrumb-item a:hover {
+      text-decoration: underline;
+    }
+
+    .products-container {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .product-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .product-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-weight: 600;
+      color: #4e73df;
+    }
+
+    .btn-create {
+      background-color: #4e73df;
+      border-color: #4e73df;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-create:hover {
+      background-color: #2e59d9;
+      border-color: #2e59d9;
+      transform: translateY(-2px);
+    }
+
+    .product-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.95rem;
+      border: 1px solid #e3e6f0;
+    }
+
+    .product-table th {
+      background-color: #f8f9fc;
+      color: #4e73df;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      padding: 15px;
+      border-bottom: 2px solid #e3e6f0;
+      vertical-align: middle;
+    }
+
+    .product-table td {
+      padding: 15px;
+      vertical-align: middle;
+      border-bottom: 1px solid #e3e6f0;
+    }
+
+    .product-table tr:hover {
+      background-color: #f8f9fc;
+    }
+
+    .product-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .btn-view {
+      background-color: #1cc88a;
+      border-color: #1cc88a;
+      color: white;
+      transition: all 0.2s;
+    }
+
+    .btn-view:hover {
+      background-color: #169e6c;
+      border-color: #169e6c;
+    }
+
+    .btn-update {
+      background-color: #f6c23e;
+      border-color: #f6c23e;
+      color: white;
+    }
+
+    .btn-update:hover {
+      background-color: #dda20a;
+      border-color: #dda20a;
+    }
+
+    .btn-delete {
+      background-color: #e74a3b;
+      border-color: #e74a3b;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background-color: #be2617;
+      border-color: #be2617;
+    }
+
+    .action-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .badge-factory {
+      padding: 8px 12px;
+      border-radius: 30px;
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    .apple {
+      background-color: #000;
+      color: white;
+    }
+
+    .samsung {
+      background-color: #1428a0;
+      color: white;
+    }
+
+    .xiaomi {
+      background-color: #ff6700;
+      color: white;
+    }
+
+    .oppo {
+      background-color: #0f754e;
+      color: white;
+    }
+
+    .vivo {
+      background-color: #2b5dea;
+      color: white;
+    }
+
+    .realme {
+      background-color: #eca800;
+      color: black;
+    }
+
+    .nokia {
+      background-color: #124191;
+      color: white;
+    }
+
+    .huawei {
+      background-color: #cf0a2c;
+      color: white;
+    }
+
+    .sony {
+      background-color: #000;
+      color: white;
+    }
+
+    .google {
+      background-color: #4285f4;
+      color: white;
+    }
+
+    .price-column {
+      font-weight: 600;
+      color: #e74a3b;
+    }
+
+    .product-id {
+      color: #4e73df;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .empty-icon {
+      font-size: 4rem;
+      color: #dddfeb;
+      margin-bottom: 20px;
+    }
+
+    .search-bar {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      border-radius: 8px 0 0 8px;
+      border-right: none;
+    }
+
+    .search-btn {
+      border-radius: 0 8px 8px 0;
+      background-color: #4e73df;
+      border-color: #4e73df;
+    }
+
+    .table-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #e3e6f0;
+    }
+
+    .pagination {
+      margin: 0;
+    }
+
+    .pagination .page-item.active .page-link {
+      background-color: #4e73df;
+      border-color: #4e73df;
+    }
+
+    .pagination .page-link {
+      color: #4e73df;
+    }
+
+    .items-per-page {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .showing-entries {
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body class="sb-nav-fixed">
+<div th:insert="admin/layout/header :: header"></div>
+<div id="layoutSidenav">
+  <div th:insert="admin/layout/sidebar :: sidebar"></div>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4 page-title">Quản lý sản phẩm</h1>
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item"><a href="/admin"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+          <li class="breadcrumb-item active"><i class="fas fa-mobile-alt me-1"></i>Sản phẩm</li>
+        </ol>
+
+        <div class="products-container">
+          <div class="product-header">
+            <h3 class="product-title"><i class="fas fa-table me-2"></i>Danh sách sản phẩm</h3>
+            <a href="/admin/product/create" class="btn btn-primary btn-create">
+              <i class="fas fa-plus-circle"></i>
+              Thêm sản phẩm mới
+            </a>
+          </div>
+
+          <div class="search-bar">
+            <input type="text" class="form-control search-input" placeholder="Tìm kiếm sản phẩm..." />
+            <button class="btn btn-primary search-btn">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table product-table text-center" th:if="${not #lists.isEmpty(products)}">
+              <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Tên sản phẩm</th>
+                <th scope="col">Giá bán</th>
+                <th scope="col">Hãng sản xuất</th>
+                <th scope="col">Thao tác</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="product : ${products}">
+                <td class="product-id" th:text="${product.id}"></td>
+                <td th:text="${product.name}" class="text-start"></td>
+                <td class="price-column">₫<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span></td>
+                <td>
+                  <span th:class="${'badge badge-factory ' + #strings.toLowerCase(product.factory)}" th:text="${product.factory}"></span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <a th:href="@{/admin/product/{id}(id=${product.id})}" class="btn btn-view action-btn" title="Xem chi tiết">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a th:href="@{/admin/product/update/{id}(id=${product.id})}" class="btn btn-update action-btn" title="Chỉnh sửa">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <a th:href="@{/admin/product/delete/{id}(id=${product.id})}" class="btn btn-delete action-btn" title="Xóa sản phẩm"
+                       onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                      <i class="fas fa-trash-alt"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+                <!-- Nút Previous -->
+                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                  <a class="page-link" th:href="${currentPage > 1} ? @{/admin/product(page=${currentPage - 1})} : '#'" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+
+                <!-- Danh sách số trang -->
+                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+                  <a class="page-link" th:href="@{/admin/product(page=${i})}" th:text="${i}"></a>
+                </li>
+
+                <!-- Nút Next -->
+                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                  <a class="page-link" th:href="${currentPage < totalPages} ? @{/admin/product(page=${currentPage + 1})} : '#'" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
+
+
+
+
+            <!-- Empty state when no products -->
+          </div>
+          <!-- Pagination and items per page -->
+        </div>
+      </div>
+    </main>
+    <div th:insert="admin/layout/footer :: footer"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="/js/scripts.js"></script>
+</body>
+</html>

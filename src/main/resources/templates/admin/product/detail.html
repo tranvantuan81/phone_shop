@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Hỏi Dân IT - Dự án laptopshop" />
+    <meta name="author" content="Hỏi Dân IT" />
+    <title>Chi tiết sản phẩm - Hỏi Dân IT</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .product-detail-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            max-width: 800px;
+            border: none;
+        }
+
+        .product-image-container {
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f8f9fa;
+        }
+
+        .product-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .product-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .card-header {
+            background-color: #4e73df;
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border: none;
+        }
+
+        .list-group-item {
+            padding: 16px 20px;
+            border-left: none;
+            border-right: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .list-group-item strong {
+            color: #5a5c69;
+        }
+
+        .list-group-item span {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .price-value {
+            color: #e74a3b;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .action-buttons {
+            margin-top: 2rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-back {
+            background-color: #1cc88a;
+            border-color: #1cc88a;
+            color: white;
+            padding: 10px 20px;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background-color: #169e6c;
+            border-color: #169e6c;
+        }
+
+        .btn-edit {
+            background-color: #f6c23e;
+            border-color: #f6c23e;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .btn-edit:hover {
+            background-color: #dda20a;
+            border-color: #dda20a;
+        }
+
+        .page-title {
+            font-weight: 700;
+            color: #4e73df;
+        }
+
+        .breadcrumb-item a {
+            color: #4e73df;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item a:hover {
+            text-decoration: underline;
+        }
+
+        .product-info-section {
+            padding: 0;
+        }
+
+        .section-divider {
+            height: 1px;
+            background-color: #e3e6f0;
+            margin: 0;
+        }
+
+        .product-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .product-header i {
+            color: #4e73df;
+        }
+
+        .additional-info {
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body class="sb-nav-fixed">
+<div th:insert="admin/layout/header :: header"></div>
+<div id="layoutSidenav">
+    <div th:insert="admin/layout/sidebar :: sidebar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <h1 class="mt-4 page-title">Chi tiết sản phẩm</h1>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a th:href="@{/admin}"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                    <li class="breadcrumb-item"><a th:href="@{/admin/product}"><i class="fas fa-mobile-alt me-1"></i>Sản phẩm</a></li>
+                    <li class="breadcrumb-item active">Xem chi tiết</li>
+                </ol>
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="product-header">
+                                <i class="fas fa-info-circle fa-2x"></i>
+                                <h3>Thông tin sản phẩm #<span th:text="${id}" class="text-primary"></span></h3>
+                            </div>
+
+                            <div class="card product-detail-card">
+                                <div class="product-image-container">
+                                    <img th:src="@{/images/product/{image}(image=${product.image})}" alt="Hình ảnh sản phẩm" />
+                                </div>
+
+                                <div class="card-header">
+                                    <i class="fas fa-clipboard-list me-2"></i>Thông tin chi tiết
+                                </div>
+
+                                <ul class="list-group list-group-flush product-info-section">
+                                    <li class="list-group-item">
+                                        <strong>Mã sản phẩm:</strong>
+                                        <span th:text="${id}"></span>
+                                    </li>
+                                    <hr class="section-divider"/>
+                                    <li class="list-group-item">
+                                        <strong>Tên sản phẩm:</strong>
+                                        <span th:text="${product.name}"></span>
+                                    </li>
+                                    <hr class="section-divider"/>
+                                    <li class="list-group-item">
+                                        <strong>Giá bán:</strong>
+                                        <span class="price-value">₫<span th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}"></span></span>
+                                    </li>
+                                    <hr class="section-divider"/>
+                                    <li class="list-group-item" th:if="${product.factory != null}">
+                                        <strong>Hãng sản xuất:</strong>
+                                        <span th:text="${product.factory}"></span>
+                                    </li>
+                                    <li class="list-group-item" th:if="${product.target != null}">
+                                        <strong>Phân khúc:</strong>
+                                        <span th:text="${product.target}"></span>
+                                    </li>
+                                    <li class="list-group-item" th:if="${product.quantity != null}">
+                                        <strong>Số lượng trong kho:</strong>
+                                        <span th:text="${product.quantity}"></span>
+                                    </li>
+                                </ul>
+
+                                <div class="additional-info" th:if="${product.shortDesc != null || product.detailDesc != null}">
+                                    <div th:if="${product.shortDesc != null}">
+                                        <h5><i class="fas fa-bookmark me-2"></i>Mô tả ngắn</h5>
+                                        <p th:text="${product.shortDesc}"></p>
+                                    </div>
+                                    <div th:if="${product.detailDesc != null}" class="mt-3">
+                                        <h5><i class="fas fa-file-alt me-2"></i>Mô tả chi tiết</h5>
+                                        <p th:text="${product.detailDesc}"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons">
+                                <a th:href="@{/admin/product}" class="btn btn-back">
+                                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                                </a>
+                                <a th:href="@{/admin/product/update/{id}(id=${id})}" class="btn btn-edit">
+                                    <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div th:insert="admin/layout/footer :: footer"></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>

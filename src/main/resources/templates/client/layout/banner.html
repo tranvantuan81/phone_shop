@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LapZone - Banner</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css}">
+  <style>
+    .hero-header {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .carousel-item {
+        position: relative;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+    }
+
+    .carousel-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+        z-index: 1;
+    }
+
+    .carousel-item .btn {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background-color: rgba(0,0,0,0.5);
+        transition: all 0.3s ease;
+    }
+
+    .carousel-item .btn:hover {
+        background-color: rgba(0,0,0,0.7);
+        transform: scale(1.05);
+    }
+
+    .hero-title {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .hero-subtitle {
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    @media (max-width: 991px) {
+        .hero-header {
+            text-align: center;
+        }
+        .carousel {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    }
+  </style>
+</head>
+<body>
+<div th:fragment="banner">
+  <!-- Hero Start -->
+  <div class="container-fluid py-5 mb-5 hero-header">
+    <div class="container py-5">
+      <div class="row g-5 align-items-center">
+        <div class="col-md-12 col-lg-7 hero-content">
+          <h4 class="mb-3 hero-subtitle">100% Sản Phẩm Chính Hãng</h4>
+          <h1 class="mb-5 display-3 text-primary hero-title">Hàng cao cấp<br /> Rẻ vô địch</h1>
+        </div>
+        <div class="col-md-12 col-lg-5">
+          <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
+            <div class="carousel-inner" role="listbox">
+              <div class="carousel-item active rounded">
+                <img src="/images/product/78198381-63a8-4e33-bee4-c426d23ff00c.jpg"
+                     class="img-fluid w-100 h-100 bg-secondary rounded" alt="Gaming Laptop">
+                <a href="#" class="btn px-4 py-2 text-white rounded">
+                  <i class=""></i>SamSung
+                </a>
+              </div>
+              <div class="carousel-item rounded">
+                <img src="/images/product/3024afa6-8391-4617-b177-afa16e14f543.jpg"
+                     class="img-fluid w-100 h-100 rounded" alt="Laptop">
+                <a href="#" class="btn px-4 py-2 text-white rounded">
+                  <i class=""></i>Apple
+                </a>
+              </div>
+              <div class="carousel-item rounded">
+                <img src="/images/product/5fdde126-c034-4d86-bd25-74cf4736fa09.jpg"
+                     class="img-fluid w-100 h-100 rounded" alt="Accessories">
+                <a href="#" class="btn px-4 py-2 text-white rounded">
+                  <i class=""></i>Google
+                </a>
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselId" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselId" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Hero End -->
+</div>
+
+<!-- Bootstrap JS -->
+<script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js}"></script>
+<!-- jQuery -->
+<script th:src="@{https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js}"></script>
+</body>
+</html>

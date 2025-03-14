@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Raleway:wght@600;800&display=swap"
+            rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="/client/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="/client/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="/client/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="/client/css/style.css" rel="stylesheet">
+
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <!-- Default header name is X-CSRF-TOKEN -->
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Cải thiện phần sản phẩm */
+        .product-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: left;
+            color: #222;
+            line-height: 1.3;
+            min-height: 40px;
+        }
+
+        .product-desc {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            color: #666;
+            font-size: 13px;
+            text-align: left;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+            min-height: 36px;
+        }
+
+        .fruite-item {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: all 0.35s ease;
+            background-color: #fff;
+            border: none !important;
+            border-radius: 12px !important;
+            overflow: hidden;
+        }
+
+        .fruite-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .fixed-img {
+            height: 190px;
+            object-fit: contain;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 0;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        .fruite-item:hover .fixed-img {
+            transform: scale(1.05);
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e74c3c;
+            width: 100%;
+            text-align: left;
+            margin: 5px 0 15px 0;
+            line-height: 1;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            padding: 10px 16px !important;
+            border-radius: 8px !important;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            border: none !important;
+            background-color: #f8f9fa;
+            color: #0d6efd !important;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #0d6efd;
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .category-tag {
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px !important;
+            border-radius: 6px !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-content {
+            padding: 20px !important;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: none !important;
+        }
+
+        .product-info {
+            margin-bottom: 0;
+        }
+
+        /* Cải thiện header */
+        .display-6 {
+            font-weight: 700;
+            position: relative;
+            margin-bottom: 15px !important;
+        }
+
+        .display-6:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 60px;
+            height: 3px;
+            background-color: #0d6efd;
+        }
+
+        /* Cải thiện tab navigation */
+        .nav-pills .nav-item .active {
+            background-color: #0d6efd !important;
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.2);
+        }
+
+        .nav-pills .nav-item a {
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border-radius: 8px !important;
+        }
+
+        .nav-pills .nav-item a:hover:not(.active) {
+            background-color: #e9ecef !important;
+        }
+
+        .nav-pills .nav-item a span {
+            padding: 2px 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .display-6 {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+
+            .display-6:after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .nav-pills {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Spinner Start -->
+<div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
+    <div class="spinner-grow text-primary" role="status"></div>
+</div>
+<!-- Spinner End -->
+
+<!-- Header -->
+<div th:insert="client/layout/header :: header"></div>
+
+<!-- Banner -->
+<div th:insert="client/layout/banner :: banner"></div>
+
+<!-- Feature -->
+
+<!-- Products Shop Start -->
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <div class="tab-class">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-4">
+                    <h1 class="display-6 mb-0">Sản phẩm nổi bật</h1>
+                </div>
+                <div class="col-lg-8 text-end">
+                    <ul class="nav nav-pills d-inline-flex text-center mb-5">
+                        <li class="nav-item">
+                            <a class="d-flex m-2 py-2 bg-light rounded-pill active" data-bs-toggle="pill" href="#tab-1">
+                                <span class="text-dark" style="width: 130px;">Tất cả sản phẩm</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tab-content">
+                <div id="tab-1" class="tab-pane fade show p-0 active">
+                    <div class="row g-4">
+                        <div class="col-md-6 col-lg-4 col-xl-3" th:each="product : ${products}">
+                            <div class="rounded position-relative fruite-item shadow-sm">
+                                <div class="fruite-img">
+                                    <img th:src="@{/images/product/{image}(image=${product.image})}"
+                                         class="img-fluid rounded-top fixed-img" alt="Sản phẩm">
+                                </div>
+                                <div class="text-white bg-success px-3 py-1 rounded position-absolute category-tag">
+                                    Điện thoại
+                                </div>
+                                <div class="card-content rounded-bottom">
+                                    <div class="product-info">
+
+                                            <a th:href="@{/products/{id}(id=${product.id})}">
+                                                <h4  th:text="${product.name}" class="product-name"></h4>
+                                            </a>
+
+                                        <p th:text="${product.shortDesc}" class="product-desc"></p>
+                                        <p th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'"
+                                           class="product-price"></p>
+                                    </div>
+<!--                                    <form th:action="@{'/add-product-to-cart/' + ${product.id}}" method="post">-->
+<!--                                        <button class="btn rounded-pill text-primary add-to-cart-btn">-->
+<!--                                            <i class="fa fa-shopping-bag me-2"></i> Add to cart-->
+<!--                                        </button>-->
+<!--                                    </form>-->
+                                    <button th:data-product-id="${product.id}"
+                                            class="btnAddToCartHomepage mx-auto btn border border-secondary rounded-pill px-3 text-primary">
+                                        <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                        Thêm vào giỏ hàng
+                                    </button>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Products Shop End -->
+
+<div th:insert="client/layout/feature :: feature"></div>
+
+<!-- Footer -->
+<div th:insert="client/layout/footer :: footer"></div>
+
+<!-- Back to Top -->
+<a href="#" class="btn btn-primary border-0 rounded-circle back-to-top" style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;">
+    <i class="fa fa-arrow-up"></i>
+</a>
+
+<!-- JavaScript Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/client/lib/easing/easing.min.js"></script>
+<script src="/client/lib/waypoints/waypoints.min.js"></script>
+<script src="/client/lib/lightbox/js/lightbox.min.js"></script>
+<script src="/client/lib/owlcarousel/owl.carousel.min.js"></script>
+
+<!-- Template Javascript -->
+<script src="/client/js/main.js"></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+</body>
+</html>

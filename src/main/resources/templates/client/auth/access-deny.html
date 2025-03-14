@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Access Denied Page" />
+    <meta name="author" content="LaptopShop" />
+    <title>Access Denied - LaptopShop</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .error-container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .error-icon {
+            font-size: 80px;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .error-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            font-size: 18px;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        .home-button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .home-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="error-container">
+        <div class="error-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h1 class="error-title">Quyền truy cập bị từ chối</h1>
+        <div class="error-message">
+            Bạn không có quyền truy cập vào trang này. Vui lòng liên hệ người quản trị nếu bạn cần được hỗ trợ.
+        </div>
+        <a th:href="@{/}" class="btn btn-success home-button">
+            <i class="fas fa-home me-2"></i>Trang Chủ
+        </a>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm User Deletion</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <link href="/css/styles.css" rel="stylesheet" />
+  <style>
+    .delete-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .delete-title {
+      color: #dc3545;
+      font-weight: 600;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #dc3545;
+      padding-bottom: 10px;
+    }
+
+    .alert-custom {
+      background-color: rgba(220, 53, 69, 0.1);
+      border-left: 5px solid #dc3545;
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .warning-icon {
+      font-size: 3rem;
+      color: #dc3545;
+      margin-right: 20px;
+    }
+
+    .btn-danger-custom {
+      background-color: #dc3545;
+      border: none;
+      padding: 10px 25px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-danger-custom:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-secondary-custom {
+      background-color: #6c757d;
+      border: none;
+      padding: 10px 25px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary-custom:hover {
+      background-color: #5a6268;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    .user-id-badge {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 5px 10px;
+      border-radius: 30px;
+      font-weight: bold;
+    }
+
+    .breadcrumb-item a {
+      color: #dc3545;
+      text-decoration: none;
+    }
+
+    .breadcrumb-item a:hover {
+      color: #c82333;
+      text-decoration: underline;
+    }
+
+    .action-buttons {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body class="sb-nav-fixed">
+<div th:insert="admin/layout/header :: header"></div>
+<div id="layoutSidenav">
+  <div th:insert="admin/layout/sidebar :: sidebar"></div>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <h1><i class="fas fa-user-times me-2 text-danger"></i>Xóa người dùng</h1>
+          <a href="/admin" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Trở về
+          </a>
+        </div>
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item"><a href="/admin"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="/admin/user">Users</a></li>
+          <li class="breadcrumb-item active">Xóa người dùng</li>
+        </ol>
+
+        <div class="container mt-4">
+          <div class="row">
+            <div class="col-md-8 col-12 mx-auto">
+              <div class="delete-container">
+                <h3 class="delete-title">
+                  <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa người dùng
+                </h3>
+
+                <div class="alert-custom d-flex align-items-center my-4">
+                  <i class="fas fa-exclamation-circle warning-icon"></i>
+                  <div>
+                    <h4 class="mb-2">Bạn sắp xóa người dùng có ID: <span class="user-id-badge" th:text="${userId}"></span></h4>
+                    <p class="mb-0">Không thể hoàn tác hành động này. Tất cả dữ liệu liên quan đến người dùng này bao gồm thông tin hồ sơ, lịch sử đơn hàng và sở thích sẽ bị xóa vĩnh viễn khỏi hệ thống.</p>
+                  </div>
+                </div>
+
+                <div class="card mb-4 border-danger">
+                  <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Thông tin quan trọng
+                  </div>
+                  <div class="card-body">
+                    <ul class="mb-0">
+                      <li>Tài khoản người dùng không thể khôi phục sau khi đã xóa</li>
+                      <li>Tất cả dữ liệu người dùng sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu</li>
+                      <li>Bất kỳ phiên hoạt động nào của người dùng này sẽ bị chấm dứt</li>
+                      <li>Hãy cân nhắc việc hủy kích hoạt tài khoản nếu bạn có thể cần khôi phục lại sau này</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <form th:action="@{/admin/user/delete}" method="post">
+                  <input type="hidden" name="userId" th:value="${userId}" />
+                  <div class="d-flex justify-content-between action-buttons">
+                    <button class="btn btn-danger btn-danger-custom">
+                      <i class="fas fa-trash-alt me-2"></i>Xóa người dùng
+                    </button>
+                    <a th:href="@{/admin/user/}" class="btn btn-secondary btn-secondary-custom">
+                      <i class="fas fa-times me-2"></i>Hủy
+                    </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div th:insert="admin/layout/footer :: footer"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+<script src="js/scripts.js"></script>
+</body>
+</html>

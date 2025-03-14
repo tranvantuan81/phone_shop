@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details - Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css}">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link href="/css/styles.css" rel="stylesheet" />
+    <style>
+        .detail-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .detail-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .user-info-card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .user-info-header {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .user-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #f8f9fa;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+            margin: 0 auto 20px;
+        }
+
+        .avatar-container {
+            background-color: #f8f9fa;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .user-id-badge {
+            background-color: #e3f2fd;
+            color: #0d6efd;
+            padding: 5px 10px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .info-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e3f2fd;
+            color: #3498db;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            width: 120px;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+
+        .btn-back {
+            background-color: #3498db;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-edit {
+            background-color: #f39c12;
+            border: none;
+        }
+
+        .btn-edit:hover {
+            background-color: #e67e22;
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            border: none;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        .breadcrumb-item a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="sb-nav-fixed">
+<div th:insert="admin/layout/header :: header"></div>
+<div id="layoutSidenav">
+    <div th:insert="admin/layout/sidebar :: sidebar"></div>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4">
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <h1><i class="fas fa-user me-2 text-primary"></i>Chi tiết người dùng</h1>
+                    <a href="/admin" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-1"></i> Trở lại
+                    </a>
+                </div>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a href="/admin"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="/admin/user">Users</a></li>
+                    <li class="breadcrumb-item active">Chi tiết người dùng</li>
+                </ol>
+
+                <div class="container mt-4">
+                    <div class="row">
+                        <div class="col-lg-10 col-12 mx-auto">
+                            <div class="detail-container">
+                                <h3 class="detail-title">
+                                    <i class="fas fa-id-card me-2"></i>Hồ sơ người dùng
+                                </h3>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="avatar-container">
+                                            <img class="user-avatar" th:src="${user.avatar != null} ? @{/images/avatar/{image}(image=${user.avatar})} : '/images/avatar/avatar-default-icon.png'" alt="User Avatar" />
+                                            <h5 class="mb-2" th:text="${user.fullName}">User Name</h5>
+                                            <span class="user-id-badge" th:text="'ID: ' + ${userId}">ID: 123</span>
+                                            <div class="mt-3">
+                                                <span class="badge bg-primary" th:text="${user.role != null} ? ${user.role.name} : 'USER'">ROLE</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="action-buttons">
+                                            <a th:href="@{/admin/user/edit/{id}(id=${userId})}" class="btn btn-warning btn-edit w-100">
+                                                <i class="fas fa-edit me-2"></i>Chỉnh sửa
+                                            </a>
+                                            <a th:href="@{/admin/user/delete/{id}(id=${userId})}" class="btn btn-danger btn-delete w-100">
+                                                <i class="fas fa-trash me-2"></i>Xóa
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        <div class="card user-info-card">
+                                            <div class="user-info-header">
+                                                <i class="fas fa-info-circle me-2"></i>Thông tin người dùng
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <div class="info-item">
+                                                    <div class="info-icon">
+                                                        <i class="fas fa-fingerprint"></i>
+                                                    </div>
+                                                    <div class="info-label">User ID:</div>
+                                                    <div class="info-value" th:text="${userId}">123</div>
+                                                </div>
+                                                <div class="info-item">
+                                                    <div class="info-icon">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </div>
+                                                    <div class="info-label">Email:</div>
+                                                    <div class="info-value" th:text="${user.email}">user@example.com</div>
+                                                </div>
+                                                <div class="info-item">
+                                                    <div class="info-icon">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div class="info-label">Full Name:</div>
+                                                    <div class="info-value" th:text="${user.fullName}">John Doe</div>
+                                                </div>
+                                                <div class="info-item">
+                                                    <div class="info-icon">
+                                                        <i class="fas fa-map-marker-alt"></i>
+                                                    </div>
+                                                    <div class="info-label">Address:</div>
+                                                    <div class="info-value" th:text="${user.address != null && !user.address.isEmpty()} ? ${user.address} : 'Not provided'">123 Main St, City</div>
+                                                </div>
+                                                <div class="info-item">
+                                                    <div class="info-icon">
+                                                        <i class="fas fa-phone"></i>
+                                                    </div>
+                                                    <div class="info-label">Phone:</div>
+                                                    <div class="info-value" th:text="${user.phone != null && !user.phone.isEmpty()} ? ${user.phone} : 'Not provided'">+1234567890</div>
+                                                </div>
+                                                <div class="info-item">
+                                                    <div class="info-icon">
+                                                        <i class="fas fa-user-tag"></i>
+                                                    </div>
+                                                    <div class="info-label">Role:</div>
+                                                    <div class="info-value" >
+                                                        <span th:if="${user.role}" class="badge bg-info text-dark" th:text="${user.role.name}"></span>
+                                                        <span th:unless="${user.role}" class="badge bg-secondary">No Role</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+<!--                                        <div class="card user-info-card mt-4">-->
+<!--                                            <div class="user-info-header">-->
+<!--                                                <i class="fas fa-history me-2"></i>Account Activity-->
+<!--                                            </div>-->
+<!--                                            <div class="card-body">-->
+<!--                                                <div class="row">-->
+<!--                                                    <div class="col-6">-->
+<!--                                                        <div class="mb-3">-->
+<!--                                                            <label class="text-muted">Created At</label>-->
+<!--                                                            <p class="fw-bold" th:text="${user.createdAt != null} ? ${#dates.format(user.createdAt, 'dd-MM-yyyy HH:mm')} : 'Not available'">01-01-2023</p>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="col-6">-->
+<!--                                                        <div class="mb-3">-->
+<!--                                                            <label class="text-muted">Last Login</label>-->
+<!--                                                            <p class="fw-bold" th:text="${user.lastLogin != null} ? ${#dates.format(user.lastLogin, 'dd-MM-yyyy HH:mm')} : 'Never'">01-01-2023</p>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 text-center">
+                                    <a th:href="@{/admin/user/}" class="btn btn-success btn-back">
+                                        <i class="fas fa-arrow-left me-2"></i>Trở về
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <div th:insert="admin/layout/footer :: footer"></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+<script src="js/scripts.js"></script>
+</body>
+</html>
