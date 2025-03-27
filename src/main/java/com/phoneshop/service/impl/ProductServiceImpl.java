@@ -13,10 +13,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +34,6 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
-
-
     @Override
     public Page<Product> getAllProducts(Pageable page) {
         return this.productRepository.findAll(page);
@@ -43,7 +41,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<Product> getAllProductsWithSpec(Pageable page, ProductCriteriaDTO productCriteriaDTO) {
-
         if (productCriteriaDTO.getTarget() == null
                 && productCriteriaDTO.getFactory() == null
                 && productCriteriaDTO.getPrice() == null) {
@@ -70,12 +67,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public Specification<Product> buildPriceSpecification(List<String> price) {
-        Specification<Product> combinedSpec = Specification.where(null); // disconjunction
+        Specification<Product> combinedSpec = Specification.where(null);
         for (String p : price) {
             double min = 0;
             double max = 0;
 
-            // Set the appropriate min and max based on the price range string
             switch (p) {
                 case "duoi-10-trieu":
                     min = 1;
@@ -100,10 +96,8 @@ public class ProductServiceImpl implements ProductService {
                 combinedSpec = combinedSpec.or(rangeSpec);
             }
         }
-
         return combinedSpec;
     }
-
 
     @Override
     public void deleteProduct(Long productId) {
@@ -131,53 +125,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void addProductToCart(String email, long productId, HttpSession session, long quantity) {
-
         User user = this.userService.getUserByEmail(email);
         if (user != null) {
-            // check user đã có Cart chưa ? nếu chưa -> tạo mới
-            Cart cart = this.cartRepository.findByUser(user);
-
-            if (cart == null) {
-                // tạo mới cart
-                Cart otherCart = new Cart();
-                otherCart.setUser(user);
-                otherCart.setSum(0);
-
-                cart = this.cartRepository.save(otherCart);
-            }
-
-            // save cart_detail
-            // tìm product by id
-
+            Cart cart = getOrCreateCart(user);
             Optional<Product> productOptional = this.productRepository.findById(productId);
             if (productOptional.isPresent()) {
-                Product realProduct = productOptional.get();
-
-                // check sản phẩm đã từng được thêm vào giỏ hàng trước đây chưa ?
-                CartDetail oldDetail = this.cartDetailRepository.findByCartAndProduct(cart, realProduct);
-                //
-                if (oldDetail == null) {
-                    CartDetail cd = new CartDetail();
-                    cd.setCart(cart);
-                    cd.setProduct(realProduct);
-                    cd.setPrice(realProduct.getPrice());
-                    cd.setQuantity(quantity);
-                    this.cartDetailRepository.save(cd);
-
-                    // update cart (sum);
-                    int s = cart.getSum() + 1;
-                    cart.setSum(s);
-                    this.cartRepository.save(cart);
-                    session.setAttribute("sum", s);
-                } else {
-                    oldDetail.setQuantity(oldDetail.getQuantity() + quantity);
-                    this.cartDetailRepository.save(oldDetail);
-                }
-
+                Product product = productOptional.get();
+                addOrUpdateCartDetail(cart, product, quantity);
+                session.setAttribute("sum", cart.getSum());
             }
-
         }
-
     }
 
     @Override
@@ -192,19 +149,10 @@ public class ProductServiceImpl implements ProductService {
             CartDetail cartDetail = cartDetailOptional.get();
             Cart cart = cartDetail.getCart();
             cartDetailRepository.deleteById(cartDetailId);
-
-            if (cart.getSum() > 1) {
-                int s = cart.getSum() - 1;
-                cart.setSum(s);
-                session.setAttribute("sum", s);
-                cartRepository.save(cart);
-            } else {
-                cartRepository.deleteById(cart.getId());
-                session.setAttribute("sum", 0);
-            }
+            updateCartAndSessionAfterDelete(cart, session);
+        } else {
+            throw new ResourceNotFoundException("CartDetail not found with id: " + cartDetailId);
         }
-
-
     }
 
     @Override
@@ -220,77 +168,153 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void handlePlaceOrder(
             User user, HttpSession session,
             String receiverName, String receiverAddress, String receiverPhone,
             String paymentMethod, String uuid) {
 
-        // step 1: get cart by user
         Cart cart = this.cartRepository.findByUser(user);
         if (cart != null) {
             List<CartDetail> cartDetails = cart.getCartDetails();
-
             if (cartDetails != null) {
+                // Kiểm tra số lượng sản phẩm trước khi đặt hàng
+                validateProductQuantities(cartDetails);
 
-                // create order
-                Order order = new Order();
-                order.setUser(user);
-                order.setReceiverName(receiverName);
-                order.setReceiverAddress(receiverAddress);
-                order.setReceiverPhone(receiverPhone);
-                order.setStatus("PENDING");
+                double totalPrice = cartDetails.stream().mapToDouble(cd -> cd.getPrice() * cd.getQuantity()).sum();
+                Order order = createOrder(user, receiverName, receiverAddress, receiverPhone, paymentMethod, uuid, totalPrice);
+                createOrderDetails(order, cartDetails);
 
-                order.setPaymentMethod(paymentMethod);
-                order.setPaymentStatus("PAYMENT_UNPAID");
-                order.setPaymentRef(paymentMethod.equals("COD") ? "UNKNOWN" : uuid);
+                // Trừ số lượng sản phẩm trong kho và tăng số lượng đã bán (sold)
+                updateProductQuantities(cartDetails);
 
-                double sum = 0;
-                for (CartDetail cd : cartDetails) {
-                    sum += cd.getPrice();
-                }
-                order.setTotalPrice(sum);
-                order = this.orderRepository.save(order);
-
-                // create orderDetail
-
-                for (CartDetail cd : cartDetails) {
-                    OrderDetail orderDetail = new OrderDetail();
-                    orderDetail.setOrder(order);
-                    orderDetail.setProduct(cd.getProduct());
-                    orderDetail.setPrice(cd.getPrice());
-                    orderDetail.setQuantity(cd.getQuantity());
-
-                    this.orderDetailRepository.save(orderDetail);
-                }
-
-                // step 2: delete cart_detail and cart
-                for (CartDetail cd : cartDetails) {
-                    this.cartDetailRepository.deleteById(cd.getId());
-                }
-
-                this.cartRepository.deleteById(cart.getId());
-
-                // step 3 : update session
+                deleteCartAfterOrder(cart);
                 session.setAttribute("sum", 0);
             }
         }
-
     }
 
     @Override
     public void updatePaymentStatus(String paymentRef, String paymentStatus) {
         Optional<Order> orderOptional = this.orderRepository.findByPaymentRef(paymentRef);
         if (orderOptional.isPresent()) {
-            // update
             Order order = orderOptional.get();
             order.setPaymentStatus(paymentStatus);
             this.orderRepository.save(order);
         }
     }
 
-
     private Product getProductById(long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    }
+
+    private Cart getOrCreateCart(User user) {
+        Cart cart = this.cartRepository.findByUser(user);
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setSum(0);
+            cart = this.cartRepository.save(cart);
+        }
+        return cart;
+    }
+
+    private void addOrUpdateCartDetail(Cart cart, Product product, long quantity) {
+        CartDetail oldDetail = this.cartDetailRepository.findByCartAndProduct(cart, product);
+        if (oldDetail == null) {
+            CartDetail cd = new CartDetail();
+            cd.setCart(cart);
+            cd.setProduct(product);
+            cd.setPrice(product.getPrice());
+            cd.setQuantity(quantity);
+            this.cartDetailRepository.save(cd);
+
+            // Update cart sum
+            cart.setSum(cart.getSum() + 1);
+            this.cartRepository.save(cart);
+        } else {
+            oldDetail.setQuantity(oldDetail.getQuantity() + quantity);
+            this.cartDetailRepository.save(oldDetail);
+        }
+    }
+
+    private void updateCartAndSessionAfterDelete(Cart cart, HttpSession session) {
+        if (cart.getSum() > 1) {
+            int s = cart.getSum() - 1;
+            cart.setSum(s);
+            session.setAttribute("sum", s);
+            cartRepository.save(cart);
+        } else {
+            cartRepository.deleteById(cart.getId());
+            session.setAttribute("sum", 0);
+        }
+    }
+
+    private Order createOrder(User user, String receiverName, String receiverAddress, String receiverPhone, String paymentMethod, String uuid, double totalPrice) {
+        Order order = new Order();
+        order.setUser(user);
+        order.setReceiverName(receiverName);
+        order.setReceiverAddress(receiverAddress);
+        order.setReceiverPhone(receiverPhone);
+        order.setStatus("PENDING");
+        order.setPaymentMethod(paymentMethod);
+        order.setPaymentStatus("PAYMENT_UNPAID");
+        order.setPaymentRef(paymentMethod.equals("COD") ? "UNKNOWN" : uuid);
+        order.setTotalPrice(totalPrice);
+        return this.orderRepository.save(order);
+    }
+
+    private void createOrderDetails(Order order, List<CartDetail> cartDetails) {
+        for (CartDetail cd : cartDetails) {
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrder(order);
+            orderDetail.setProduct(cd.getProduct());
+            orderDetail.setPrice(cd.getPrice());
+            orderDetail.setQuantity(cd.getQuantity());
+            this.orderDetailRepository.save(orderDetail);
+        }
+    }
+
+    private void deleteCartAfterOrder(Cart cart) {
+        for (CartDetail cd : cart.getCartDetails()) {
+            this.cartDetailRepository.deleteById(cd.getId());
+        }
+        this.cartRepository.deleteById(cart.getId());
+    }
+
+    private void validateProductQuantities(List<CartDetail> cartDetails) {
+        for (CartDetail cartDetail : cartDetails) {
+            Product product = cartDetail.getProduct();
+            long orderedQuantity = cartDetail.getQuantity();
+            long currentQuantity = product.getQuantity();
+
+            if (currentQuantity < orderedQuantity) {
+                throw new RuntimeException("Not enough stock for product: " + product.getName());
+            }
+        }
+    }
+
+    private void updateProductQuantities(List<CartDetail> cartDetails) {
+        for (CartDetail cartDetail : cartDetails) {
+            Product product = cartDetail.getProduct();
+            long orderedQuantity = cartDetail.getQuantity();
+            long currentQuantity = product.getQuantity();
+
+            // Kiểm tra số lượng sản phẩm trong kho
+            if (currentQuantity < orderedQuantity) {
+                throw new RuntimeException("Not enough stock for product: " + product.getName());
+            }
+
+            // Trừ số lượng sản phẩm trong kho
+            product.setQuantity(currentQuantity - orderedQuantity);
+
+            // Tăng số lượng sản phẩm đã bán (sold)
+            long currentSold = product.getSold(); // Lấy giá trị hiện tại của sold
+            product.setSold(currentSold + orderedQuantity); // Tăng sold lên
+
+            // Lưu cập nhật vào cơ sở dữ liệu
+            productRepository.save(product);
+        }
     }
 }

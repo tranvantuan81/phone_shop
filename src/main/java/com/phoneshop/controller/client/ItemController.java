@@ -48,7 +48,7 @@ public class ItemController {
 
         this.productService.addProductToCart(email, productId, session, 1);
 
-        return "redirect:/";
+        return "redirect:/products";
     }
 
 
